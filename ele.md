@@ -24,7 +24,7 @@
 		      this.start = v;
 		      this.getMovieList(this.type,this.start);  //调用api清单
 		    },
-
+        
  + ele 加loading   v-loading="loading"  请求之前让显示 请求之后隐藏 
         getMovieList(type, start) {
 	      this.loading = true;    
@@ -58,7 +58,7 @@
 
 #后台 登录  方面   从local存储 简化了 
 
-###  需要 一个 登录 api   login.js   api
+###  需要 一个 登录 api   login.js  api
   
             // 引入封装好的axios
 			import request from './request'  
@@ -148,39 +148,42 @@
 		
 		export default http;
 
-+ 代理 中设置   把以 / 开始的 转换为 以http://59.110.138.169开始的 还可以实现跨域   
++ 代理 中此设置   把以 / 开始的 转换为 以http://59.110.138.169开始的 还可以实现跨域  
+  
     devServer{    // 开发特有的 模式 
      proxy{
       '^/': {       //  /admin/lgoing ==> http://localhost/admin/lgoing 
          target: `http://59.110.138.169`,
          changeOrigin: true,
-         pathRewrite: {
-                        
+         pathRewrite: {                
         }
       }
-+ 开始 验证码了   url.js
++ 开始 验证码了  url.js
  
-   export default {
-       imgCode: 'http://59.110.138.169/admin/login/imgCode'
-   }
-+ 在登录页面  login/index.vue 中  import Url from "@/api/url.js"; 
+		   export default {
+		       imgCode: 'http://59.110.138.169/admin/login/imgCode'
+		   }
+##### 验证码图片 
++ 在登录页面  login/index.vue 中引入   import Url from "@/api/url.js";    
 + 页面中  
-       <el-input
-          v-model="loginForm.yan"
-          placeholder="验证码"
-          class="yan-input"
-          name="yan"
-          type="text"
-        />
-        <img @click="refreshImg" class="yan-img" :src="imgCode" alt>
-+   data() {  
-        imgCode: " " ,
-		loginForm: {
-		        username: "admin",
-		        password: "123456",
-		        yan: ""
-		      },
-         }
+ 
+		       <el-input
+		          v-model="loginForm.yan"
+		          placeholder="验证码"
+		          class="yan-input"
+		          name="yan"
+		          type="text"
+		        />
+		        <img @click="refreshImg" class="yan-img" :src="imgCode" alt>
+  
+	     data() {  
+	         imgCode: " " ,
+	 		 loginForm: {
+			        username: "admin",
+			        password: "123456",
+			        yan: ""
+			      },
+	         }
 
 +   点击刷新验证码    细节  后面跟时间戳 
  
@@ -189,54 +192,57 @@
 	      this.imgCode = Url.imgCode + "?ts=" + new Date().getTime();
 	    },
 
-+  登录拦截
-+  引入   import LoginApi from "@/api/login";	
-+    拦截设置
+#####  登录拦截  验证登录信息 用户名 密码 与 验证码
++  引入       import LoginApi from "@/api/login";	
++  拦截设置    
 +    ...this.loginForm.username 解构出来就为 username:this.loginForm.username
-+    ...this.loginForm    解构出来就是  loginForm对象 里面全部的 对象 
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        //表单验证通过
-        if (valid) {
-          LoginApi.doLogin({
-            // username:this.loginForm.username,
-            ...this.loginForm
-          }).then(res => {
-            if(res.code == 'S'){    //如果为S 登录成功 需要手动跳转 
-              // Message element的组件  可以通过this.$message获取
-              this.$message({
-                message: '恭喜登陆成功,正在获取用户数据...',
-                type: 'success'
-              });
-              //登陆成功后 需要获取用户明细
-              LoginApi.getUserInfo()
-                .then(res=>{
-                  // console.log('dd==>',res);
-                  //简化了 这里不需要用vuex
-                  var saveUser = {
-                    avatar:res.avatar,
-                    userId: res.user.id,
-                    username: res.user.username
-                  }   
-                  // 存储到localStorage
-                  setToken(saveUser);
-                  // 手动跳转   vue $router
-                  this.$router.push({name:'Dashboard'})
-                })
++    ...this.loginForm    解构出来就是  loginForm的完整对象 
++   验证表单信息 有就登录    
+	    handleLogin() {
+	      this.$refs.loginForm.validate(valid => {
+	        //表单验证通过
+	        if (valid) {     
+	          LoginApi.doLogin({
+	            // username:this.loginForm.username,
+	            ...this.loginForm 
+	          }).then(res => {
+	            if(res.code == 'S'){       //如果为S 登录成功 需要手动跳转 
+	              // Message element的组件  可以通过this.$message获取
+	              this.$message({
+	                message: '恭喜登陆成功,正在获取用户数据...',
+	                type: 'success'
+	              });
+	              //登陆成功后 需要获取用户明细    头像 id 存到本地方便下次登录 
+	              LoginApi.getUserInfo()
+	                .then(res=>{
+	                  // console.log('dd==>',res);
+	                  //简化了 这里不需要用vuex
+	                  var saveUser = {
+	                    avatar:res.avatar,
+	                    userId: res.user.id,
+	                    username: res.user.username
+	                  }   
+	                  // 存储到本地localStorage
+	                  setToken(saveUser) ;
+	                  // 手动跳转   vue $router
+	                  this.$router.push({name:'Dashboard'})
+	                })
+	
+	
+	            }else{
+	              this.$message.error('登陆失败!');
+	            }
+	            
+	          });
+	        } else {
+	        }
+	      });   
 
 
-            }else{
-              this.$message.error('登陆失败!');
-            }
-            
-          });
-        } else {
-        }
-      });   
-
-
-+ 需要吧token值存到 local 中去       utils/myAuth.js 
-		const TokenKey = 'BUFAN-TEC'
++ 需要吧token值存到 local 中去  然后登录req请求带上token值     utils/myAuth.js 
+ + Cookies 为一个库  
+        import Cookies from 'js-cookie'
+		const TokenKey = 'vue_admin_template_token'
 		
 		export function getToken() {
 		    // 字符串类型
@@ -244,7 +250,7 @@
 		  if(res){
 		      res = JSON.parse(res);
 		  }else{
-		      res = undefined;
+		      res = undefined;   如果为空 会有bug
 		  }
 		  return res;
 		}
@@ -258,38 +264,22 @@
 		  localStorage.removeItem(TokenKey) ;
 		}
 
-+  通过这一步 存到local中  import {
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  
-+  Token} from '@/utils/myAuth';
++  通过这一步 存到local中  import {Token} from '@/utils/myAuth';
   
 + 跳转 
-+ import { getToken } from '@/utils/myAuth'     // get token from cookie    permission.js下
-
-          const hasToken = getToken()
++ 
++ import { getToken } from '@/utils/myAuth'     // get token from cookie  
++     permission.js下
+#### const whiteList = ['/login']   白名单 不需要验证就可以进去登录页   
+#####redirect 默认那一页
+      获取token值
+          const hasToken = getToken()   
 			  if (hasToken) {
 			    console.log('hasToken',hasToken);
 			    if (to.path === '/login') {
-			      // if is logged in, redirect to the home page
+	// if is logged in, redirect to the home page   redirect:"/dashboard" 默认页
 			      // next({ path: '/' })
-			      NProgress.done()
+			      NProgress.done()       页面进度条关闭
 			    } else {
 			      // 从vuex获取的  咱们简化  从localstorage huoqu 
 			      // const hasGetUserInfo = store.getters.name
@@ -299,12 +289,11 @@
 			        next()
 			      } else {
 			        next(`/login`)
-			          NProgress.done()
+			        NProgress.done()
 			      }
 			    }
 			  } else {
 			    /* has no token*/
-			
 			    if (whiteList.indexOf(to.path) !== -1) {
 			      // in the free login whitelist, go directly
 			      next()
@@ -579,7 +568,9 @@
 先 cnpm install lodash --save 
 + 全局添加lodash 的方法       在 vue.config.js 中
 
- + 最上方需要先引入webpack         const webpack = require('webpack')
+ + 最上方需要先引入webpack         const webpack = 
+ + 
+ + ire('webpack')
   
 						 +         configureWebpack: {  
 									    plugins: [
@@ -973,11 +964,8 @@
     }
 
 
-
-
-
 #  下拉框选择男女
-       <el-form-item label="性别">
+           <el-form-item label="性别">
                 <el-select v-model="form.sex" placeholder="选择性别">
                   <el-option
                     v-for="item in sexOption"
@@ -988,23 +976,24 @@
                 </el-select>
               </el-form-item>
 
-       form: {
-        name: "",
-        sex: "0",
-        tel: "",
-        city:'' 
-      },
 
-    sexOption: [
-        {
-          label: "男",
-          value: "0"
-        },
-        {
-          label: "女",
-          value: "1"
-        }
-      ],
+		       form: {
+		        name: "",
+		        sex: "0",
+		        tel: "",
+		        city:'' 
+		      },
+		
+		    sexOption: [
+		        {
+		          label: "男",
+		          value: "0"
+		        },
+		        {
+		          label: "女",
+		          value: "1"
+		        }
+		      ],
 
 
 
@@ -1023,6 +1012,7 @@
 
 
 ## 向一个对象数组里面添加新的属性 + 将一个对象数组数据拿出来变成另一个对象
+
      var arry= [{a:11,b:22,c:33,d:44},{a:11,b:0,c:0,d:44},{a:11,b:22,c:99,d:99}];
      var arry2=[];
      arry.map(((item, index)=> {
@@ -1044,12 +1034,14 @@
 
 针对数组实现深复制
 用数组的方法concat一个空数组
+
 	var a = [1,2,3];
 	var b = [].concat (a);
 	a和b是两个数组
 	
 针对除函数外的深克隆
 将对象序列化在解析回来
+
 	var obj = {a:1,b:2};
 	var newObj = JSON.parse(JSON.stringify(obj));
 	obj和newObj是两个对象
@@ -1073,4 +1065,26 @@
           return user ;          
         }
   
+## 解决跨域问题
+
+     代理另一个最重要的作用: 解决跨域问题
+      // 浏览器同源策略: A ==>(ajax)  B 的资源  由于浏览器的安全策略 是不允许直接访问的
+      //  产生的问题是如何解决跨域问题:
+             1. jsonp(了解,不用了)
+             2. cors  https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS
+                    // a) 后台配置的
+             3. webpack 代理  可以包装本地请求,使目标主机无法判断是否是跨域请求
+                    // a) 打包后不可用   devServer: {} 开发环境中
+             4. nginx 代理解决跨域 
+
+
+### session  id 是由服务器生成的  request请求  response响应
++ 图片
+ 
+   ![](https://i.imgur.com/97MFVwL.png)
+
+   1 把session 储存到内存中 
+   2 把sessionid通过responent对象返回给客户端,然后把sessionid储存到cookie中
+   2 cookie存在于客服端里面 每次客户端登录 request请求都会带上cookie值
   
+   
