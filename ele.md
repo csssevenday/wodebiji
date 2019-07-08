@@ -1086,5 +1086,38 @@
    1 把session 储存到内存中 
    2 把sessionid通过responent对象返回给客户端,然后把sessionid储存到cookie中
    2 cookie存在于客服端里面 每次客户端登录 request请求都会带上cookie值
+
+## 父子通信调用 
+
+###  父到子   
+
+        <MySearch :classList="classList" :dormList="dormList" @do-search="doSearch"></MySearch> 
++ 子组件引入      
+         props: {
+		    classList: Array,
+		    dormList: Array
+		  },
++ 直接使用 classList   dormList   信息
+
+### 子到父  
+
+	   <el-button size="small" type="primary" @click="doSearch">查询</el-button>
+	
+	   doSearch() {
+	      //告诉外部你的信息this.searchForm
+	      this.$emit("do-search", this.searchForm);
+	    },
+父页面执行方法 @click="doSearch"
+      doSearch(from) {
+      // 1. 还原page的搜索条件
+      // this.$options.data()能获取this.data对象的原始数据
+      // console.log('==>',this.$options.data().page);
+      // this.page = this.$options.data().page;
+      resetData(this, "page");
+      // 2. 添加搜索条件
+      this.getStudentList(from);
+    },
+
+ 
   
    
