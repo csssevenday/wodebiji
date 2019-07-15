@@ -471,13 +471,14 @@
 + import ClassApi from "@/api/clazz";     student/index 引入 上面的api请求   
 + import DormApi from "@/api/dorm";  
   
-+ data{  
-        classList: [] ,
-        dormList:  []
-   }
-
-+ methods: {
-         getClassList() {                        获取 班级 与 宿舍 列表信息
+		 data{  
+		        classList: [] ,
+		        dormList:  []
+		   }
++ 获取 班级 与 宿舍 列表信息
+ 
+       methods: {
+         getClassList() {                       
 	      ClassApi.getClassList().then(res => {
 	        this.classList = res.data.list;    
 	      });                                  
@@ -488,8 +489,9 @@
 	      });                                  
 
 + 让input 变为可以下拉的选择的选择框 
-  
-   班级的           <el-select v-model="searchForm.classId" clearable placeholder="请选择">  input显示的字
+ +班级的  
+
+             <el-select v-model="searchForm.classId" clearable placeholder="请选择">  input显示的字
                <el-option
                   v-for="item in classList"      遍历
                   :key="item.id"                 
@@ -498,7 +500,8 @@
                 ></el-option>
             </el-select>
 
-  宿舍的 
+ + 宿舍的 
+  
         <el-select v-model="searchForm.dormId" clearable placeholder="请选择">
                 <el-option
                   v-for="item in dormList"
@@ -508,23 +511,24 @@
                 ></el-option>
          </el-select> 
 
-+  data() {
-     return {
-	      searchForm: {
-	        classId: "",
-	        dormId: ""
-	      },
+	    data() {
+	     return {
+		      searchForm: {
+		        classId: "",
+		        dormId: ""
+		      },
 
-+ 开始methods   搜索 
++ 开始methods   还原搜索框     封装成公共方法
     this.$options.data()  能获取  this.data  对象的原始数据    把data(){}  里面的信息全部获取到
-   上面的方法  可以封装成 公共方法
+   
 
     /**
 	 *   还原vm中的  原始(data)数据 对象                 utils/index
-	 */                             
-	export function resetData(vm,key){
-	  vm[key] =  vm.$options.data()[key];
-	}
+	 */     
+                        
+			export function resetData(vm,key){
+			  vm[key] =  vm.$options.data()[key];
+			}
 
 + 引入 import { resetData } from "@/utils/index";    这个方法 
 
@@ -542,6 +546,7 @@
     },
 
 + 搜索条件在请求学员数据的时候一起调用
+ 
        getStudentList() {
           //搜索的查询条件
          var searchObj = this.searchForm;       searchForm: {
@@ -549,6 +554,8 @@
 													        classId: "" , 根据班级查询
 													        dormId:  ""   根据宿舍查询
 													      },
+     //  排除没有值的内容
+      var searchObj = _.pickBy(searchForm, item => item);
 
       StudentApi.getStudentList({
         start,
@@ -564,23 +571,21 @@
         this.loading = false;
       });
 
-+  为了防止输入的内容为空 用lodash 加 webpack的方式  解决掉 
++  为了防止输入的内容为空 用lodash 加 webpack的方式  解决
 先 cnpm install lodash --save 
 + 全局添加lodash 的方法       在 vue.config.js 中
 
- + 最上方需要先引入webpack         const webpack = 
- + 
- + ire('webpack')
+ + 最上方需要先引入webpack         const webpack = ire('webpack')
   
-						 +         configureWebpack: {  
+						          configureWebpack: {  
 									    plugins: [
 									      new webpack.ProvidePlugin({
 									        _:"lodash"   
 									        })
 									    ], }
-+ student/index  下  methods中排除掉为空的东西
-+          // 排除没有值的内容             
-     searchObj = _.pickBy(this.searchForm, item => item);
+
+            // 排除没有值的内容             
+      searchObj = _.pickBy(this.searchForm, item => item);
 
 #### 重置
 
@@ -599,20 +604,20 @@
 ###    interceptor   拦截器
 
 		const service = axios.create({           //service 是 axios的对象
-		  withCredentials:false,
-		  baseURL: process.env.BASE_API, // api的base_url
-		  timeout: 8000 // request timeout
+			  withCredentials:false,
+			  baseURL: process.env.BASE_API, // api的base_url
+			  timeout: 8000 // request timeout
 		})     
-
+                                                              request
 			service.interceptors.request.use(config => {   //在请求发出之前 做的事 request/rɪ'kwɛst/请求   向后台请求数据 
 			  return config
 			}, error => {
 			  // Do something with request error
 			  console.log(error) // for debug
 			  Promise.reject(error)
-			})
-
-		service.interceptors.response.use(      //在请求过来之后做的事  后台返回为 response /rɪ'spɑns/ 反应
+			})                                   
+                                                   response
+		service.interceptors.response.use(      //在请求过来之后做的事  后台返回为                  										response /rɪ'spɑns/ 响应
 		  // response => response,
 		  /**
 		   * 下面的注释为通过在response里，自定义code来标示请求状态
