@@ -425,7 +425,7 @@ stringObject.split(separator,howmany)
   	
 			var arr = [1,2,3,5,4,6];
 			var str = arr.toString();
-			console.log(str);//1,2,3,5,4,6
+			console.log(str);  //1,2,3,5,4,6
 
 +  	 翻转数组,更改了原对象
   	
@@ -484,7 +484,7 @@ stringObject.split(separator,howmany)
 			})
 			console.log("arr5====>" , arr5);
 			
-
+          // split 转换为字符串
 ###字符串的高级api
  
   			// charAt() 获取相应位置字符
@@ -514,10 +514,13 @@ stringObject.split(separator,howmany)
 			// 返回一个新的字符串，包含从 string 的 start（包括 start 所指的字符）处开始的 length 个字符。
 			console.log(str.substr(0,5));   //hello  (从0开始截取5个)
 											//(1,1)  e
-
+    
 			// toUpperCase() toLowerCase()	变为大小写 ,不影响原字符串
 			console.log(str.toUpperCase());
 			// console.log(str.toLowerCase());
+          
+            //split  转换为数组
+         
 
 ###  json   	// json 保存数据的时候不保存方法function
 

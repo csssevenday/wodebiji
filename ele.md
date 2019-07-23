@@ -331,6 +331,7 @@
 
 ####  退出  
 +先在 api/login.js 写 退出方法 
+
 		 function doLogOut(data) {
 		  return request({
 		    url: '/admin/login/doLogOut',
@@ -346,7 +347,7 @@
  	    methods: {
 			logout() {
 			      // 1.发送到服务器退出    服务器清除相应的 session
-			      loginApi.doLogOut()
+			      loginApi.doLogOut()    
 			        .then(res=>{
 			        })
 
