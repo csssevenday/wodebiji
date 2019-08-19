@@ -31,6 +31,10 @@
 		});
 		注意前面的负号 
 
+##  豆瓣电影 图片显示需要这句话
+
++   <img :src="'https://images.weserv.nl/?url='+movie.images.small" alt />
+   
 ##  mock模拟Web数据：
 
 + 生成随机域名(每次运行结果不同)：
@@ -648,6 +652,112 @@ publicPath:"/site/zaowu"
 + <transition>   
      <router-view> </router-view>
 + </transition>  
+
+####  watch用法  监听  nv ov  
+ 
+		watch: {
+			$route(to, from) {
+				this.getdiscount(to.params.couponUserId); 监听改变在调用一次数据请求 
+				// console.log('from=====',from.params.couponUserId)
+				// console.log('to=======',to.params.couponUserId)
+			}
+		}
+
+#### 案例边框改变颜色  点击第几个框让第几个边框 改变为红色
+
+        :class= "{'content':true,'cc':this.liid==coup.id}"
+
+          liid:1 ,  
+
+        yy(id){
+	       this.liid = id;
+	    },  
+
+        //样式
+        .content {
+          border: 1px solid #ededed;
+          &.cc{
+             border: 1px solid red;
+          }
+
+####  axios拼接数据
+       
+        pageIndex:1 ,
+
+       "http://59.110.138.169/api/douban/movie/top250?start=" + this.pageIndex + "&limit=10"
+
+####  从本地 获取 
+  +1  
+            const TokenKey = 'BUFAN-TEC'
+
+			export function getToken() {
+			    // 字符串类型
+			  var res = localStorage.getItem(TokenKey);
+			  if(res){
+			      res = JSON.parse(res);
+			  }else{
+			      res = undefined;
+			  }
+			  return res;
+			}
+			
+			export function setToken(obj) {
+			    // setItem 必须是字符串
+			    localStorage.setItem(TokenKey,JSON.stringify(obj));
+			}
+			
+			export function removeToken() {
+			  localStorage.removeItem(TokenKey);
+			}   
+     
+         引入 import { getToken } from '@/utils/myAuth' // get token from cookie
+         
+          const hasToken = getToken()
+
+			  if (hasToken) {
+			    console.log('hasToken',hasToken);
+			    if (to.path === '/login') {
+			      // if is logged in, redirect to the home page
+			      // next({ path: '/' })
+			      NProgress.done()
+			    } else {
+			      // 从vuex获取的  咱们简化  从localstorage huoqu 
+			      // const hasGetUserInfo = store.getters.name
+			      //获取用户名
+			      const hasGetUserInfo = hasToken.username;
+			      if (hasGetUserInfo) {
+			        next()
+			      } else {
+			        next(`/login`)
+			          NProgress.done()
+			      }
+			    }
+			  } else {
+			    /* has no token*/
+			
+			    if (whiteList.indexOf(to.path) !== -1) {
+			      // in the free login whitelist, go directly
+			      next()
+			    } else {
+			      // other pages that do not have permission to access are redirected to the login page.
+			      next(`/login`)
+			      NProgress.done()
+			    }
+			  }
++2  
+            created() {   
+		    const hasToken= JSON.parse(localStorage.getItem('BUFAN-TEC') )   存进来的key值
+		    console.log( "123", hasToken  )
+		    console.log( "123", hasToken.userId  )
+		  },
+ 
+###  刷新验证码 
++		   点击图片的方法
+
+		    refreshImg() {
+		      // /admin/login/imgCode?ts=1234234
+		      this.imgCode = Url.imgCode + "?ts=" + new Date().getTime();
+		    },
 
 ##### $router 也可以被用来监听   
 +  app 点击下方 跳转的页面 动画 
